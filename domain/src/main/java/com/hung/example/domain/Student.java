@@ -1,4 +1,4 @@
-package com.hung.example.student.repository;
+package com.hung.example.domain;
 
 public class Student {
     private String ID;
