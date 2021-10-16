@@ -18,7 +18,7 @@ The REST API to the example app is described below.
 
 ### Request
 
-`GET /student/api/{name}`
+`GET /student/api/name/{name}`
 
     name: Name of student
     Request Header: Token = <value of token>

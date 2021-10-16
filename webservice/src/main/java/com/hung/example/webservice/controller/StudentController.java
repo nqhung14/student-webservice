@@ -24,7 +24,7 @@ public class StudentController {
     }
 
     @RequestMapping(
-            value = "/{name}",
+            value = "/name/{name}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
