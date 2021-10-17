@@ -1,50 +1,50 @@
 package com.hung.example.domain;
 
 public class Student {
-    private String ID;
-    private String Name;
-    private String Gender;
-    private String BirthYear;
-    private String Address;
+    private String id;
+    private String name;
+    private String gender;
+    private String birthYear;
+    private String address;
 
-    public String getID() {
-        return ID;
+    public String getId() {
+        return id;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getGender() {
-        return Gender;
+        return gender;
     }
 
     public void setGender(String gender) {
-        Gender = gender;
+        this.gender = gender;
     }
 
     public String getBirthYear() {
-        return BirthYear;
+        return birthYear;
     }
 
     public void setBirthYear(String birthYear) {
-        BirthYear = birthYear;
+        this.birthYear = birthYear;
     }
 
     public String getAddress() {
-        return Address;
+        return address;
     }
 
     public void setAddress(String address) {
-        Address = address;
+        this.address = address;
     }
 
 

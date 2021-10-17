@@ -7,13 +7,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import static com.hung.example.domain.constant.DBDefinition.*;
 
-public class SQLStudentRepository {
+public class SQLStudentRepository implements StudentRepository {
+    Connection conn;
 
+    public SQLStudentRepository() {
+        conn = connectToDataBase(DB_URL, DB_NAME, USER, PASSWORD);
+    }
 
-    public static Connection connectToDataBase(String url, String dataBase, String username, String pass) {
+    private static Connection connectToDataBase(String url, String dataBase, String username, String pass) {
 
         Connection conn = null;
 
@@ -33,7 +38,7 @@ public class SQLStudentRepository {
         Student inputStudent = new Student();
         Scanner input = new Scanner(System.in);
         System.out.println("Input ID: ");
-        inputStudent.setID(input.nextLine());
+        inputStudent.setId(input.nextLine());
         System.out.println("Input Name: ");
         inputStudent.setName(input.nextLine());
         System.out.println("Input Gender: ");
@@ -46,16 +51,22 @@ public class SQLStudentRepository {
         return inputStudent;
     }
 
-    public static List<Student> getStudents(String name) throws SQLException {
+    public void updateStudent(Student student, String name) throws SQLException {
 
-        Connection conn = connectToDataBase(DB_URL, DB_NAME, USER, PASSWORD);
+        Statement stmt = conn.createStatement();
+        String query = "Update dbo.Student set ID = '%s', NameStudent = '%s', Gender = '%s', BirthYear = '%s', Address = '%s' Where NameStudent = '%s'";
+        stmt.execute(String.format(query, student.getId(), student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), name));
+    }
+
+    @Override
+    public List<Student> getStudentByName(String name) throws SQLException {
         Statement stmt = conn.createStatement();
         String query = "SELECT * FROM dbo.Student WHERE NameStudent = '%s'";
         ResultSet rs = stmt.executeQuery(String.format(query, name));
         Student student = new Student();
         List<Student> listStudent = new ArrayList<>();
         while (rs.next()) {
-            student.setID(rs.getString(1));
+            student.setId(rs.getString(1));
             student.setName(rs.getString(2));
             student.setGender(rs.getString(3));
             student.setBirthYear(rs.getString(4));
@@ -66,27 +77,55 @@ public class SQLStudentRepository {
         return listStudent;
     }
 
-    public static void deleteStudentByName(String name) throws SQLException {
-
-        Connection conn = connectToDataBase(DB_URL, DB_NAME, USER, PASSWORD);
+    public void insertStudent(Student student) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "delete * from dbo.Student where NameStudent = '%s'";
-        stmt.executeQuery(String.format(query, name));
+        student.setId(UUID.randomUUID().toString());
+        String query = "Insert into dbo.Student (ID, NameStudent, Gender, BirthYear, Address) Values ('%s', '%s', '%s', '%s', '%s')";
+        stmt.execute(String.format(query, student.getId(), student.getName(), student.getGender(), student.getBirthYear(), student.getAddress()));
     }
 
-    public static void updateStudent(Student student, String name) throws SQLException {
-
-        Connection conn = connectToDataBase(DB_URL, DB_NAME, USER, PASSWORD);
+    @Override
+    public Student getStudentById(String id) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "Update dbo.Student set ID = '%s', NameStudent = '%s', Gender = '%s', BirthYear = '%s', Adress = '%s' Where NameStudent = '%s'";
-        stmt.execute(String.format(query, student.getID(), student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), name));
+        String query = "SELECT * FROM dbo.Student WHERE id = '%s'";
+        ResultSet rs = stmt.executeQuery(String.format(query, id));
+        Student student = new Student();
+        while (rs.next()) {
+            student.setId(rs.getString(1));
+            student.setName(rs.getString(2));
+            student.setGender(rs.getString(3));
+            student.setBirthYear(rs.getString(4));
+            student.setAddress(rs.getString(5));
+        }
+        return student;
     }
 
-    public static void insertStudent(Student student) throws SQLException {
-
-        Connection conn = connectToDataBase(DB_URL, DB_NAME, USER, PASSWORD);
+    @Override
+    public void deleteStudent(String id) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "Insert into dbo.Student (ID, NameStudent, Gender, BirthYear, Adress) Values ('%s', '%s', '%s', '%s', '%s')";
-        stmt.execute(String.format(query, student.getID(), student.getName(), student.getGender(), student.getBirthYear(), student.getAddress()));
+        String query = "delete * from dbo.Student where id = '%s'";
+        stmt.executeQuery(String.format(query, id));
+    }
+
+    @Override
+    public void updateStudent(Student student) throws SQLException {
+        Statement stmt = conn.createStatement();
+        String query = "Update dbo.Student set  NameStudent = '%s', Gender = '%s', BirthYear = '%s', Address = '%s' Where id = '%s'";
+        stmt.execute(String.format(query, student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), student.getId()));
+    }
+
+    @Override
+    public void partialUpdateStudent(Student student) throws SQLException {
+        Statement stmt = conn.createStatement();
+        String query = "UPDATE my_table " +
+                "SET" +
+                "NameStudent = coalesce (NameStudent,%s)," +
+                "Gender = coalesce (Gender,%s)," +
+                "BirthYear = coalesce (BirthYear,%s)" +
+                "Address = coalesce (Address,%s)" +
+                "where id = %s " +
+                "and " +
+                "coalesce(NameStudent, Gender, BirthYear, Address) is not null";
+        stmt.execute(String.format(query, student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), student.getId()));
     }
 }
