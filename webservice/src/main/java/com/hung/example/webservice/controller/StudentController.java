@@ -32,11 +32,11 @@ public class StudentController {
         List<Student> result = null;
         try {
             if (ObjectUtils.isEmpty(token) || !token.equals(ProjectDefine.token)) {
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             result = studentRepository.getStudentByName(name);
         } catch (Exception e) {
-            new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
         }
         return result;
     }
@@ -50,17 +50,17 @@ public class StudentController {
         Student result = null;
         try {
             if (!isValidUUID(id)) {
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
             }
             if (ObjectUtils.isEmpty(token) || !token.equals(ProjectDefine.token)) {
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             result = studentRepository.getStudentById(id);
             if (ObjectUtils.isEmpty(result)) {
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
             }
         } catch (Exception e) {
-            new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
         }
         return result;
     }
@@ -73,15 +73,15 @@ public class StudentController {
     public void insertStudent(@RequestBody Student student, @RequestHeader("Token") String token) {
         try {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             //validate student information
             if (student.getName().isEmpty() || student.getGender().isEmpty())
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name or Gender is missing");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name or Gender is missing");
 
             studentRepository.insertStudent(student);
         } catch (Exception e) {
-            new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
         }
     }
 
@@ -92,14 +92,14 @@ public class StudentController {
     public void deleteStudent(@PathVariable String id, @RequestHeader("Token") String token) {
         try {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             if (!isValidUUID(id)) {
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
             }
             studentRepository.deleteStudent(id);
         } catch (Exception e) {
-            new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
         }
     }
 
@@ -111,17 +111,17 @@ public class StudentController {
     public void updateStudent(@PathVariable String id, @RequestBody Student student, @RequestHeader("Token") String token) {
         try {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             if (!isValidUUID(id)) {
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
             }
             if(!student.getId().isEmpty() &&  !student.getId().equals(id)) {
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not matched");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not matched");
             }
             studentRepository.updateStudent(student);
         } catch (Exception e) {
-            new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
         }
     }
 
@@ -133,17 +133,17 @@ public class StudentController {
     public void partialUpdateStudent(@PathVariable String id, @RequestBody Student student, @RequestHeader("Token") String token) {
         try {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             if (!isValidUUID(id)) {
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
             }
             if(!student.getId().isEmpty() &&  !student.getId().equals(id)) {
-                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not matched");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not matched");
             }
             studentRepository.partialUpdateStudent(student);
         } catch (Exception e) {
-            new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
         }
     }
 
