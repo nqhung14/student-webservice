@@ -54,7 +54,7 @@ public class SQLStudentRepository implements StudentRepository {
     public void updateStudent(Student student, String name) throws SQLException {
 
         Statement stmt = conn.createStatement();
-        String query = "Update dbo.Student set ID = '%s', NameStudent = '%s', Gender = '%s', BirthYear = '%s', Address = '%s' Where NameStudent = '%s'";
+        String query = "Update dbo.Student set ID = '%s', NameStudent = '%s', Gender = '%s', BirthYear = '%s', HouseAddress = '%s' Where NameStudent = '%s'";
         stmt.execute(String.format(query, student.getId(), student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), name));
     }
 
@@ -80,7 +80,7 @@ public class SQLStudentRepository implements StudentRepository {
     public void insertStudent(Student student) throws SQLException {
         Statement stmt = conn.createStatement();
         student.setId(UUID.randomUUID().toString());
-        String query = "Insert into dbo.Student (ID, NameStudent, Gender, BirthYear, Address) Values ('%s', '%s', '%s', '%s', '%s')";
+        String query = "Insert into dbo.Student (ID, NameStudent, Gender, BirthYear, HouseAddress) Values ('%s', '%s', '%s', '%s', '%s')";
         stmt.execute(String.format(query, student.getId(), student.getName(), student.getGender(), student.getBirthYear(), student.getAddress()));
     }
 
@@ -110,22 +110,22 @@ public class SQLStudentRepository implements StudentRepository {
     @Override
     public void updateStudent(Student student) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "Update dbo.Student set  NameStudent = '%s', Gender = '%s', BirthYear = '%s', Address = '%s' Where id = '%s'";
+        String query = "Update dbo.Student set  NameStudent = '%s', Gender = '%s', BirthYear = '%s', HouseAddress = '%s' Where id = '%s'";
         stmt.execute(String.format(query, student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), student.getId()));
     }
 
     @Override
     public void partialUpdateStudent(Student student) throws SQLException {
         Statement stmt = conn.createStatement();
-        String query = "UPDATE my_table " +
+        String query = "UPDATE dbo.Student " +
                 "SET" +
                 "NameStudent = coalesce (NameStudent,%s)," +
                 "Gender = coalesce (Gender,%s)," +
                 "BirthYear = coalesce (BirthYear,%s)" +
-                "Address = coalesce (Address,%s)" +
+                "HouseAddress = coalesce (HouseAddress,%s)" +
                 "where id = %s " +
                 "and " +
-                "coalesce(NameStudent, Gender, BirthYear, Address) is not null";
+                "coalesce(NameStudent, Gender, BirthYear, HouseAddress) is not null";
         stmt.execute(String.format(query, student.getName(), student.getGender(), student.getBirthYear(), student.getAddress(), student.getId()));
     }
 }

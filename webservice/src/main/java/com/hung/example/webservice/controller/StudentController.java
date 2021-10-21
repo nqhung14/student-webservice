@@ -10,6 +10,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,16 +29,13 @@ public class StudentController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public List<Student> getStudent(@PathVariable String name, @RequestHeader("Token") String token) {
+    public List<Student> getStudent(@PathVariable String name, @RequestHeader("Token") String token) throws SQLException {
         List<Student> result = null;
-        try {
-            if (ObjectUtils.isEmpty(token) || !token.equals(ProjectDefine.token)) {
+             if (ObjectUtils.isEmpty(token) || !token.equals(ProjectDefine.token)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
             result = studentRepository.getStudentByName(name);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
-        }
+
         return result;
     }
 
@@ -46,9 +44,8 @@ public class StudentController {
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public Student getStudentById(@PathVariable String id, @RequestHeader("Token") String token) {
+    public Student getStudentById(@PathVariable String id, @RequestHeader("Token") String token) throws SQLException {
         Student result = null;
-        try {
             if (!isValidUUID(id)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
             }
@@ -59,19 +56,11 @@ public class StudentController {
             if (ObjectUtils.isEmpty(result)) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
             }
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
-        }
         return result;
     }
 
-    @RequestMapping(
-            value = "/",
-            method = RequestMethod.POST,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public void insertStudent(@RequestBody Student student, @RequestHeader("Token") String token) {
-        try {
+    @PostMapping("/")
+    public String insertStudent(@RequestBody Student student, @RequestHeader("Token") String token) throws SQLException {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
@@ -80,17 +69,14 @@ public class StudentController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name or Gender is missing");
 
             studentRepository.insertStudent(student);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
-        }
+            return student.getId();
     }
 
     @RequestMapping(
             value = "/{id}",
             method = RequestMethod.DELETE
     )
-    public void deleteStudent(@PathVariable String id, @RequestHeader("Token") String token) {
-        try {
+    public void deleteStudent(@PathVariable String id, @RequestHeader("Token") String token) throws SQLException {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
@@ -98,9 +84,6 @@ public class StudentController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Id");
             }
             studentRepository.deleteStudent(id);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
-        }
     }
 
     @RequestMapping(
@@ -108,8 +91,7 @@ public class StudentController {
             method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public void updateStudent(@PathVariable String id, @RequestBody Student student, @RequestHeader("Token") String token) {
-        try {
+    public void updateStudent(@PathVariable String id, @RequestBody Student student, @RequestHeader("Token") String token) throws SQLException {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
@@ -120,9 +102,6 @@ public class StudentController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not matched");
             }
             studentRepository.updateStudent(student);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
-        }
     }
 
     @RequestMapping(
@@ -130,8 +109,7 @@ public class StudentController {
             method = RequestMethod.PATCH,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public void partialUpdateStudent(@PathVariable String id, @RequestBody Student student, @RequestHeader("Token") String token) {
-        try {
+    public void partialUpdateStudent(@PathVariable String id, @RequestBody Student student, @RequestHeader("Token") String token) throws SQLException {
             if (token.isEmpty() || !token.equals(ProjectDefine.token)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Token");
             }
@@ -142,9 +120,6 @@ public class StudentController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id is not matched");
             }
             studentRepository.partialUpdateStudent(student);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR: " + e.getMessage());
-        }
     }
 
     private final static Pattern UUID_REGEX_PATTERN =
